@@ -16,7 +16,6 @@ public class FootstepAudioController : MonoBehaviour
     public float minTimeBetweenFootsteps = 0.3f; // Minimum time between footstep sounds
     public float maxTimeBetweenFootsteps = 0.6f; // Maximum time between footstep sounds
 
-    private bool isWalking = false; // Flag to track if the player is walking
     private float timeSinceLastFootstep; // Time since the last footstep sound
 
     private void Awake()
@@ -28,16 +27,20 @@ public class FootstepAudioController : MonoBehaviour
 
     private void Update()
     {
-        if (characterController.velocity.sqrMagnitude > 50)
+        Debug.Log(characterController.velocity.sqrMagnitude);
+        if (characterController.velocity.sqrMagnitude >= 50 && characterController.velocity.sqrMagnitude < 80)
         {
-            isWalking = true;
+            minTimeBetweenFootsteps = 0.4f;
+            maxTimeBetweenFootsteps = 0.6f;
         }
-        else
+        if(characterController.velocity.sqrMagnitude >= 80)
         {
-            isWalking= false;
+            minTimeBetweenFootsteps = 0.25f;
+            maxTimeBetweenFootsteps = 0.4f;
         }
+
         // Check if the player is walking
-        if (isWalking && characterController.isGrounded)
+        if (characterController.velocity.sqrMagnitude >= 50 && characterController.isGrounded)
         {
             // Check if enough time has passed to play the next footstep sound
             if (Time.time - timeSinceLastFootstep >= Random.Range(minTimeBetweenFootsteps, maxTimeBetweenFootsteps))
@@ -50,18 +53,6 @@ public class FootstepAudioController : MonoBehaviour
                 timeSinceLastFootstep = Time.time; // Update the time since the last footstep sound
             }
         }
-    }
-
-    // Call this method when the player starts walking
-    public void StartWalking()
-    {
-        isWalking = true;
-    }
-
-    // Call this method when the player stops walking
-    public void StopWalking()
-    {
-        isWalking = false;
     }
 
     private AudioClip GetRandomClip()

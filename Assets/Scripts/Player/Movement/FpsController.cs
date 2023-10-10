@@ -1,9 +1,11 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(PlayerInput))]
 public class FpsController : MonoBehaviour
 {
     public Camera playerCamera;
+    PlayerInput playerInput;
     CharacterController characterController;
 
 
@@ -15,8 +17,6 @@ public class FpsController : MonoBehaviour
     [HideInInspector] public Vector3 moveDirection = Vector3.zero;
 
     private float movementDirectionY;
-    private float xInput;
-    private float yInput;
 
     [Space]
     [Header("Jump")]
@@ -43,6 +43,7 @@ public class FpsController : MonoBehaviour
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        playerInput = GetComponent<PlayerInput>();
         
         // Lock cursor
         Cursor.lockState = CursorLockMode.Locked;
@@ -55,13 +56,15 @@ public class FpsController : MonoBehaviour
         originalHeight = characterController.height;
         cameraStandPosition = playerCamera.transform.localPosition;
         cameraCrouchPosition = cameraStandPosition + new Vector3(0, crouchCameraOffset, 0);
+
+        PlayerInput.crouchInput += HandleCrouching;
+        PlayerInput.jumpInput += HandleJumping;
     }
 
     void Update()
     {
-        HandleCrouching();
         HandleMovement();
-        HandleJumping();
+        HandleFalling();
 
         // Move the controller
         characterController.Move(moveDirection * Time.deltaTime);
@@ -77,20 +80,17 @@ public class FpsController : MonoBehaviour
         if (!canMove)
             return;
 
-        xInput = Input.GetAxis("Horizontal");
-        yInput = Input.GetAxis("Vertical");
-
         // We are grounded, so recalculate move direction based on axes
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
 
-        // Press Left Shift to run
-        bool isRunning = Input.GetKey(KeyCode.LeftShift) && !isCrouching;
+        if (playerInput.isSprinting)
+            HandleCrouching(false);
 
         movementDirectionY = moveDirection.y;
-        moveDirection = (forward * yInput) + (right * xInput);
+        moveDirection = (forward * playerInput.movementInput.y) + (right * playerInput.movementInput.x);
         moveDirection.Normalize();
-        moveDirection = (isRunning ? runningSpeed : (isCrouching ? crouchSpeed : walkingSpeed)) * moveDirection;
+        moveDirection = (playerInput.isSprinting ? runningSpeed : (isCrouching ? crouchSpeed : walkingSpeed)) * moveDirection;
         moveDirection.y = movementDirectionY;
     }
 
@@ -99,10 +99,10 @@ public class FpsController : MonoBehaviour
         if (!canMove)
             return;
 
-        rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
+        rotationX += -playerInput.mouseInput.y * lookSpeed;
         rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
         playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
-        transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
+        transform.rotation *= Quaternion.Euler(0, playerInput.mouseInput.x * lookSpeed, 0);
     }
 
     private void HandleCrouching()
@@ -110,14 +110,12 @@ public class FpsController : MonoBehaviour
         if (!canMove)
             return;
 
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            isCrouching = !isCrouching;
-            HandleCrouching(isCrouching);
-        }
+        isCrouching = !isCrouching;
+        HandleCrouching(isCrouching);
     }
     private void HandleCrouching(bool _isCrouching)
     {
+        isCrouching = _isCrouching;
         if (_isCrouching)
         {
             characterController.height = crouchHeight;
@@ -134,21 +132,16 @@ public class FpsController : MonoBehaviour
 
     private void HandleJumping()
     {
-        if (Input.GetButton("Jump") && canMove && characterController.isGrounded)
+        if (canMove && characterController.isGrounded)
         {
             moveDirection.y = jumpSpeed;
+            HandleCrouching(false);
         }
-        else
-        {
-            moveDirection.y = movementDirectionY;
-        }
+    }
 
-        // Apply gravity. Gravity is multiplied by deltaTime twice (once here, and once below
-        // when the moveDirection is multiplied by deltaTime). This is because gravity should be applied
-        // as an acceleration (ms^-2)
+    private void HandleFalling()
+    {
         if (!characterController.isGrounded)
-        {
             moveDirection.y -= gravity * Time.deltaTime;
-        }
     }
 }
