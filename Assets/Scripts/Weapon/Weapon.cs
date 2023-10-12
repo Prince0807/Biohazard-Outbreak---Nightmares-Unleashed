@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class Weapon : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] protected WeaponData weaponData;
+    public WeaponData weaponData;
 
     protected CharacterController characterController;
     protected Animator animator;

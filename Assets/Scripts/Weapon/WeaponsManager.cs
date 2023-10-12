@@ -1,21 +1,44 @@
+using System.Collections;
 using UnityEngine;
 
 public class WeaponsManager : MonoBehaviour
 {
-    [SerializeField] GameObject[] weapons;
+    public static WeaponsManager Instance;
     
-    int currentWeaponIndex = 0;
+    private AudioSource weaponAudioSource;
+    
+    [SerializeField] Weapon[] weapons;
+    private int currentWeaponIndex = 0;
 
+    private void Awake()
+    {
+        Instance = this;
+        weaponAudioSource = GetComponent<AudioSource>();
+    }
 
     void Start()
     {
-        PlayerInput.switchWeaponInput += SwitchWeapon;
+        PlayerInput.switchWeaponInput += StartSwitchingWeapon;
     }
 
-    public void SwitchWeapon()
+    public void StartSwitchingWeapon()
     {
-        weapons[currentWeaponIndex].SetActive(false);
-        weapons[PlayerInput.weaponIndex].SetActive(true);
+        if (currentWeaponIndex == PlayerInput.weaponIndex)
+            return;
+        StartCoroutine(Switch());
+    }
+
+    IEnumerator Switch()
+    {
+        weapons[currentWeaponIndex].GetComponent<Animator>().SetTrigger("Hide");
+        yield return new WaitForSeconds(0.5f);
+        weapons[currentWeaponIndex].gameObject.SetActive(false);
+        weapons[PlayerInput.weaponIndex].gameObject.SetActive(true);
         currentWeaponIndex = PlayerInput.weaponIndex;
+    }
+
+    public void PlayAudio(AudioClip clip)
+    {
+        weaponAudioSource.PlayOneShot(clip);
     }
 }

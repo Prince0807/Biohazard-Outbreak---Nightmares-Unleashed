@@ -27,7 +27,6 @@ public class FootstepAudioController : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(characterController.velocity.sqrMagnitude);
         if (characterController.velocity.sqrMagnitude >= 50 && characterController.velocity.sqrMagnitude < 80)
         {
             minTimeBetweenFootsteps = 0.4f;
@@ -48,7 +47,6 @@ public class FootstepAudioController : MonoBehaviour
                 // Play a random footstep sound from the array
                 AudioClip clip = GetRandomClip();
                 audioSource.PlayOneShot(clip);
-                Debug.Log(clip.name);
 
                 timeSinceLastFootstep = Time.time; // Update the time since the last footstep sound
             }

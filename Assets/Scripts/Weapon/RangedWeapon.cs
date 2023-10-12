@@ -4,7 +4,6 @@ using UnityEngine;
 public class RangedWeapon : Weapon
 {
     [SerializeField] Transform muzzle;
-    
 
     private void OnEnable()
     {
@@ -14,6 +13,8 @@ public class RangedWeapon : Weapon
             PlayerInput.shootInput += Shoot;
 
         PlayerInput.reloadInput += Reload;
+
+        WeaponsManager.Instance.PlayAudio(weaponData.draw_Audio);
     }
     private void OnDisable()
     {
@@ -31,13 +32,8 @@ public class RangedWeapon : Weapon
             return;
 
         animator.Play("Reload");
+        WeaponsManager.Instance.PlayAudio(weaponData.reload_Audio);
         weaponData.reloading = true;
-    }
-    public void FinishedReloading()
-    {
-        weaponData.totalAmmo -= (weaponData.magSize - weaponData.currentAmmo);
-        weaponData.currentAmmo = weaponData.magSize;
-        weaponData.reloading = false;
     }
 
     override protected bool CanShoot()
@@ -47,17 +43,21 @@ public class RangedWeapon : Weapon
 
     override protected void Shoot()
     {
-        if(weaponData.currentAmmo > 0 && CanShoot())
+        if (CanShoot())
         {
-            if(Physics.Raycast(muzzle.position, transform.forward, out RaycastHit hitInfo, weaponData.maxDistance))
+            if (weaponData.currentAmmo > 0)
             {
-                Debug.Log(hitInfo.transform.name);
+                if (Physics.Raycast(muzzle.position, transform.forward, out RaycastHit hitInfo, weaponData.maxDistance))
+                {
+                    animator.SetTrigger("Fire");
+                    WeaponsManager.Instance.PlayAudio(weaponData.fire_Audio);
+                }
 
-                animator.SetTrigger("Fire");
+                weaponData.currentAmmo--;
+                timeSinceLastShot = 0;
             }
-
-            weaponData.currentAmmo--;
-            timeSinceLastShot = 0;
+            else
+                Reload();
         }
     }
 }

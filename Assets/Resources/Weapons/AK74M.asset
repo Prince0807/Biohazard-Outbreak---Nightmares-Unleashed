@@ -19,5 +19,10 @@ MonoBehaviour:
   currentAmmo: 2
   magSize: 8
   totalAmmo: 32
+  maxCarryAmmo: 0
   fireRate: 100
   reloading: 0
+  draw_Audio: {fileID: 8300000, guid: 7d571fb2c86d4424ca3c98a9917769a6, type: 3}
+  fire_Audio: {fileID: 8300000, guid: d4e75ee4ec114b1468a788d871ad6eff, type: 3}
+  reload_Audio: {fileID: 8300000, guid: 7d571fb2c86d4424ca3c98a9917769a6, type: 3}
+  holster_Audio: {fileID: 8300000, guid: 7131d701ae015a54aa3d856feccd513f, type: 3}
