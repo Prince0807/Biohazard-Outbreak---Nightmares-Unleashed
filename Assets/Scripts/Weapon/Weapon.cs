@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public abstract class Weapon : MonoBehaviour
 {
     [Header("References")]
@@ -9,6 +8,7 @@ public abstract class Weapon : MonoBehaviour
 
     protected CharacterController characterController;
     protected Animator animator;
+    protected AudioSource audioSource;
     
     protected float timeSinceLastShot;
     
@@ -16,7 +16,7 @@ public abstract class Weapon : MonoBehaviour
     {
         characterController = GetComponentInParent<CharacterController>();
         animator = GetComponent<Animator>();
-        weaponData.reloading = false;
+        audioSource = GetComponent<AudioSource>();
         weaponData.currentAmmo = weaponData.magSize;
     }
 

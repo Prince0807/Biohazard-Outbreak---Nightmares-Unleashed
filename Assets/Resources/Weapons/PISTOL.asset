@@ -18,11 +18,11 @@ MonoBehaviour:
   maxDistance: 100
   currentAmmo: 12
   magSize: 12
-  totalAmmo: 25
-  maxCarryAmmo: 0
-  fireRate: 180
+  totalAmmo: 1000
+  maxCarryAmmo: 72
+  fireRate: 400
   reloading: 0
-  draw_Audio: {fileID: 8300000, guid: 2e3d7417db0c19847a33904cf1228ddc, type: 3}
-  fire_Audio: {fileID: 8300000, guid: d4e75ee4ec114b1468a788d871ad6eff, type: 3}
-  reload_Audio: {fileID: 8300000, guid: ae96959e39f258e4f984a50c97e0c3db, type: 3}
-  holster_Audio: {fileID: 8300000, guid: ae96959e39f258e4f984a50c97e0c3db, type: 3}
+  draw_Audio: {fileID: 8300000, guid: 9158afb6966d445db9caf1dccf7acbcc, type: 3}
+  fire_Audio: {fileID: 8300000, guid: 2203773368e4340d98c114f55c2dd7fd, type: 3}
+  reload_Audio: {fileID: 8300000, guid: e5198250a6a57408bb36e14bc4a322c4, type: 3}
+  emptyMag_Audio: {fileID: 8300000, guid: 68301919140a44b419b178edb0906753, type: 3}

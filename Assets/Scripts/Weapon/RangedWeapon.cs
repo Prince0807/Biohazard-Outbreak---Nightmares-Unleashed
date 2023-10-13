@@ -1,9 +1,12 @@
 using System;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public class RangedWeapon : Weapon
 {
     [SerializeField] Transform muzzle;
+    [SerializeField] ParticleSystem muzzleFlash;
+    private bool reloading;
 
     private void OnEnable()
     {
@@ -12,9 +15,11 @@ public class RangedWeapon : Weapon
         else if (weaponData.type == WeaponType.Rifle)
             PlayerInput.shootInput += Shoot;
 
-        PlayerInput.reloadInput += Reload;
+        PlayerInput.reloadInput += StartReload;
 
-        WeaponsManager.Instance.PlayAudio(weaponData.draw_Audio);
+        audioSource.clip = weaponData.draw_Audio;
+        audioSource.Play();
+        reloading = false;
     }
     private void OnDisable()
     {
@@ -23,22 +28,29 @@ public class RangedWeapon : Weapon
         else if (weaponData.type == WeaponType.Rifle)
             PlayerInput.shootInput -= Shoot;
 
-        PlayerInput.reloadInput -= Reload;
+        PlayerInput.reloadInput -= StartReload;
     }
 
-    private void Reload()
+    private void StartReload()
     {
-        if (weaponData.reloading)
+        if (reloading || weaponData.currentAmmo >= weaponData.magSize)
             return;
 
+        reloading = true;
         animator.Play("Reload");
-        WeaponsManager.Instance.PlayAudio(weaponData.reload_Audio);
-        weaponData.reloading = true;
+        audioSource.clip = weaponData.reload_Audio;
+        audioSource.Play();
+    }
+    public void FinishReload()
+    {
+        weaponData.totalAmmo -= (weaponData.magSize - weaponData.currentAmmo);
+        weaponData.currentAmmo = weaponData.magSize;
+        reloading = false;
     }
 
     override protected bool CanShoot()
     {
-        return !weaponData.reloading && timeSinceLastShot > 1f / (weaponData.fireRate / 60f);
+        return !reloading && timeSinceLastShot > 1f / (weaponData.fireRate / 60f);
     }
 
     override protected void Shoot()
@@ -50,14 +62,19 @@ public class RangedWeapon : Weapon
                 if (Physics.Raycast(muzzle.position, transform.forward, out RaycastHit hitInfo, weaponData.maxDistance))
                 {
                     animator.SetTrigger("Fire");
-                    WeaponsManager.Instance.PlayAudio(weaponData.fire_Audio);
+                    audioSource.clip = weaponData.fire_Audio;
+                    audioSource.Play();
+                    muzzleFlash.Play();
                 }
 
                 weaponData.currentAmmo--;
                 timeSinceLastShot = 0;
             }
             else
-                Reload();
+            {
+                audioSource.clip = weaponData.emptyMag_Audio;
+                audioSource.Play();
+            }
         }
     }
 }
