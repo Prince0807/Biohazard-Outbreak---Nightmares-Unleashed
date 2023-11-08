@@ -50,18 +50,20 @@ public class EnemyAI : MonoBehaviour
 		if (distanceToTarget <=navMeshAgent.stoppingDistance)
 		{
             AttackTarget();
-		}
+            animator.SetFloat("IsAttacking", 1f);
+        }
 	}
     private void ChaseTarget() 
     {
         navMeshAgent.SetDestination(target.position);
         animator.SetFloat("IsWalking", 1f);
         animator.SetFloat("IsRunning", 1f);
+        animator.SetFloat("IsAttacking", 0f);
     }
     private void AttackTarget()
 	{
         Debug.Log("attacking");
-        animator.SetFloat("IsAttacking", 1f);
+        
     }
 
     //gizomos around the enemy circle
