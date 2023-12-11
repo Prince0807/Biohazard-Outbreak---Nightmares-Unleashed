@@ -2,7 +2,7 @@
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInput))]
-public class FpsController : MonoBehaviour
+public class FpsController : MonoBehaviour, IDamageable
 {
     public Camera playerCamera;
     PlayerInput playerInput;
@@ -39,6 +39,8 @@ public class FpsController : MonoBehaviour
     public float crouchCameraOffset = -0.5f;
     private Vector3 cameraStandPosition;
     private Vector3 cameraCrouchPosition;
+
+    public int health { get; set; }
 
     private void Awake()
     {
@@ -143,5 +145,10 @@ public class FpsController : MonoBehaviour
     {
         if (!characterController.isGrounded)
             moveDirection.y -= gravity * Time.deltaTime;
+    }
+
+    public void Damage(int damage)
+    {
+        health -= damage;
     }
 }

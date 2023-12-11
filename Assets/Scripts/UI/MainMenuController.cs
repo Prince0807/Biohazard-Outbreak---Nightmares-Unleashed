@@ -23,9 +23,9 @@ public class MainMenuController : MonoBehaviour
         SceneManager.LoadScene("Demo");
     }
 
-    public void SetAnimationTrigger(string triggerName)
+    public void SetAnimationIndex(int index)
     {
-        animator.SetTrigger(triggerName);
+        animator.SetInteger("Index", index);
     }
 
     public void ExitGameBtn()

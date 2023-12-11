@@ -8,15 +8,15 @@ public class WeaponData : ScriptableObject
     public WeaponType type;
 
     [Header("Shooting")]
-    public float damage;
+    public int damage;
     public float maxDistance;
+    public float fireRate;
 
     [Header("Reloading")]
-    public int currentAmmo;
-    public int magSize;
-    public int totalAmmo;
+    public int magAmmo;
+    public int magCapacity;
+    public int carryingAmmo;
     public int maxCarryAmmo;
-    public float fireRate;
 
     [Header("Audio")]
     public AudioClip draw_Audio;
@@ -28,10 +28,10 @@ public class WeaponData : ScriptableObject
 
     public void AddAmmo(int ammo)
     {
-        totalAmmo += ammo;
+        carryingAmmo += ammo;
 
-        if(totalAmmo > maxCarryAmmo)
-            totalAmmo = maxCarryAmmo;
+        if(carryingAmmo > maxCarryAmmo)
+            carryingAmmo = maxCarryAmmo;
     }
 }
 

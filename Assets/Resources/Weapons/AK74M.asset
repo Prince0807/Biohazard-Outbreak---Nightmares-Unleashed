@@ -16,12 +16,11 @@ MonoBehaviour:
   type: 0
   damage: 64
   maxDistance: 240
-  currentAmmo: 8
-  magSize: 8
-  totalAmmo: 48
-  maxCarryAmmo: 48
   fireRate: 100
-  reloading: 0
+  magAmmo: 8
+  magCapacity: 8
+  carryingAmmo: 72
+  maxCarryAmmo: 72
   draw_Audio: {fileID: 8300000, guid: 5b110495623318845bff6f03cf4d07a6, type: 3}
   fire_Audio: {fileID: 8300000, guid: fecc3e7a0166a104cb810435f6fdf37b, type: 3}
   reload_Audio: {fileID: 8300000, guid: 5e7f633dda3117f4f90253f51ee065f0, type: 3}

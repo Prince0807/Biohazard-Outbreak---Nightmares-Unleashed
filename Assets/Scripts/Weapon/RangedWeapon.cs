@@ -33,7 +33,7 @@ public class RangedWeapon : Weapon
 
     private void StartReload()
     {
-        if (reloading || weaponData.currentAmmo >= weaponData.magSize)
+        if (reloading || weaponData.magAmmo >= weaponData.magCapacity)
             return;
 
         reloading = true;
@@ -43,8 +43,8 @@ public class RangedWeapon : Weapon
     }
     public void FinishReload()
     {
-        weaponData.totalAmmo -= (weaponData.magSize - weaponData.currentAmmo);
-        weaponData.currentAmmo = weaponData.magSize;
+        weaponData.carryingAmmo -= (weaponData.magCapacity - weaponData.magAmmo);
+        weaponData.magAmmo = weaponData.magCapacity;
         reloading = false;
     }
 
@@ -57,17 +57,23 @@ public class RangedWeapon : Weapon
     {
         if (CanShoot())
         {
-            if (weaponData.currentAmmo > 0)
+            if (weaponData.magAmmo > 0)
             {
-                if (Physics.Raycast(muzzle.position, transform.forward, out RaycastHit hitInfo, weaponData.maxDistance))
+                if (Physics.Raycast(Camera.main.transform.position, transform.forward, out RaycastHit hitInfo, weaponData.maxDistance))
                 {
+                    Debug.Log(hitInfo.collider.gameObject.name);
+                    if(hitInfo.collider.TryGetComponent(out IDamageable hit))
+                    {
+                        Debug.Log("Hit");
+                        hit.Damage(weaponData.damage);
+                    }
                     animator.SetTrigger("Fire");
                     audioSource.clip = weaponData.fire_Audio;
                     audioSource.Play();
                     muzzleFlash.Play();
                 }
 
-                weaponData.currentAmmo--;
+                weaponData.magAmmo--;
                 timeSinceLastShot = 0;
             }
             else

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class WeaponsManager : MonoBehaviour
 {   
-    [SerializeField] Weapon[] weapons;
+    [SerializeField] private Weapon[] weapons;
     private int currentWeaponIndex = 0;
 
     void Start()
@@ -26,5 +26,10 @@ public class WeaponsManager : MonoBehaviour
         weapons[currentWeaponIndex].gameObject.SetActive(false);
         weapons[PlayerInput.weaponIndex].gameObject.SetActive(true);
         currentWeaponIndex = PlayerInput.weaponIndex;
+    }
+
+    public Weapon GetActiveWeapon()
+    {
+        return weapons[currentWeaponIndex];
     }
 }

@@ -9,7 +9,8 @@ public abstract class Weapon : MonoBehaviour
     protected CharacterController characterController;
     protected Animator animator;
     protected AudioSource audioSource;
-    
+    protected WeaponRecoil weaponRecoil;
+
     protected float timeSinceLastShot;
     
     protected virtual void Awake()
@@ -17,7 +18,8 @@ public abstract class Weapon : MonoBehaviour
         characterController = GetComponentInParent<CharacterController>();
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
-        weaponData.currentAmmo = weaponData.magSize;
+        weaponRecoil = GetComponentInParent<WeaponRecoil>();
+        weaponData.magAmmo = weaponData.magCapacity;
     }
 
     protected virtual void Update()
