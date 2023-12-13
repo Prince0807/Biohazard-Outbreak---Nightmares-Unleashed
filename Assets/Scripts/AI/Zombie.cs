@@ -11,6 +11,10 @@ public class Zombie : NPC
     [SerializeField] protected ParticleSystem bloodVFX;
     [SerializeField] protected ParticleSystem chunksVFX;
 
+    [SerializeField] AudioClip deathSound;
+    [SerializeField] AudioClip attackingSound;
+    private AudioSource audioSource;
+
     protected EnemyAIManager enemyAIManager;
     protected Transform currentWayPoint;
     protected ZombieState state = ZombieState.Idle;
@@ -138,13 +142,32 @@ public class Zombie : NPC
         GetComponent<CapsuleCollider>().enabled = false;
         isAlive = false;
         GameManager.Instance.AddScore(100);
+
         Destroy(gameObject, 5f);
+        PlaySound(deathSound);
+        StopSound(attackingSound);
     }
 
     private void LookAtTarget()
     {
         lookAt.LookAt(target.position);
         transform.rotation = Quaternion.Euler(0f, lookAt.eulerAngles.y, 0f);
+    }
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.clip = clip;
+            audioSource.Play();
+        }
+    }
+    private void StopSound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.clip = clip;
+            audioSource.Stop();
+        }
     }
 }
 
