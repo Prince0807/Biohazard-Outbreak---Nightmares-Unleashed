@@ -13,6 +13,8 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider soundSlider;
 
+    [SerializeField] private GameObject loadingScreen;
+
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -20,7 +22,8 @@ public class MainMenuController : MonoBehaviour
 
     public void PlayGameBtn()
     {
-        SceneManager.LoadScene("Demo");
+        loadingScreen.SetActive(true);
+        this.gameObject.SetActive(false);
     }
 
     public void SetAnimationIndex(int index)

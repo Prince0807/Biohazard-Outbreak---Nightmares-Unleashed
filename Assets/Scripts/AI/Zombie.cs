@@ -6,6 +6,11 @@ using UnityEngine.AI;
 public class Zombie : NPC
 {
     [SerializeField] protected Transform target;
+    [SerializeField] protected Transform lookAt;
+
+    [SerializeField] protected ParticleSystem bloodVFX;
+    [SerializeField] protected ParticleSystem chunksVFX;
+
     protected EnemyAIManager enemyAIManager;
     protected Transform currentWayPoint;
     protected ZombieState state = ZombieState.Idle;
@@ -21,15 +26,21 @@ public class Zombie : NPC
 
     private void Start()
     {
+        health = 100;
         if (target == null)
             target = FindObjectOfType<FpsController>().transform;
     }
 
     public override void Damage(int damage)
     {
+        Debug.Log(damage);
         health -= damage;
-        if(health <= 0)
+        bloodVFX.Play();
+        bloodVFX.GetComponent<AudioSource>().Play();
+        if (health <= 0)
         {
+            chunksVFX.Play();
+            chunksVFX.GetComponent<AudioSource>().Play();
             animator.Play("Death");
             state = ZombieState.Dead;
         }
@@ -45,6 +56,8 @@ public class Zombie : NPC
     {
         if (!isAlive)
             return;
+
+        Debug.Log(state.ToString());
 
         switch (state)
         {
@@ -68,7 +81,7 @@ public class Zombie : NPC
 
     protected void Idle()
     {
-        animator.CrossFade("Idle",0.25f);
+        animator.Play("Idle");
         if (enemyAIManager.wayPoints.Length > 0)
         {
             state = ZombieState.Wandering;
@@ -77,13 +90,14 @@ public class Zombie : NPC
     }
     protected void Wandering()
     {
+        aiAgent.speed = walkSpeed;
         if (Mathf.Abs(Vector3.Distance(transform.position, target.position)) < chaseRange)
         {
             state = ZombieState.Chasing;
             return;
         }
 
-        animator.CrossFade("Walk", 0.25f);
+        animator.Play("Walk");
 
         if (Mathf.Abs(Vector3.Distance(transform.position, currentWayPoint.position)) < 2f)
             currentWayPoint = enemyAIManager.wayPoints[Random.Range(0, enemyAIManager.wayPoints.Length)];
@@ -92,31 +106,45 @@ public class Zombie : NPC
     }
     protected void Chasing()
     {
-        if (Mathf.Abs(Vector3.Distance(transform.position, currentWayPoint.position)) < attackRange)
+        aiAgent.speed = runSpeed;
+        if (Mathf.Abs(Vector3.Distance(transform.position, target.position)) < attackRange)
         {
+            Debug.Log("Attacking state not received");
             state = ZombieState.Attacking;
             return;
         }
-        animator.CrossFade("Run", 0.25f);
+        if (Mathf.Abs(Vector3.Distance(transform.position, target.position)) > chaseRange)
+        {
+            state = ZombieState.Wandering;
+            return;
+        }
+        animator.Play("Run");
         aiAgent.SetDestination(target.position);
     }
     protected void Attacking()
     {
-        if (Mathf.Abs(Vector3.Distance(transform.position, currentWayPoint.position)) > attackRange)
+        if (Mathf.Abs(Vector3.Distance(transform.position, target.position)) > (attackRange + 1))
         {
             state = ZombieState.Chasing;
             return;
         }
-        animator.CrossFade("Attack", 0.25f);
+        animator.Play("Attack");
     }
     protected void Dead()
     {
-        animator.CrossFade("Death", 0.25f);
+        animator.Play("Death");
         aiAgent.isStopped = true;
         aiAgent.enabled = false;
         GetComponent<CapsuleCollider>().enabled = false;
         isAlive = false;
+        GameManager.Instance.AddScore(100);
         Destroy(gameObject, 5f);
+    }
+
+    private void LookAtTarget()
+    {
+        lookAt.LookAt(target.position);
+        transform.rotation = Quaternion.Euler(0f, lookAt.eulerAngles.y, 0f);
     }
 }
 

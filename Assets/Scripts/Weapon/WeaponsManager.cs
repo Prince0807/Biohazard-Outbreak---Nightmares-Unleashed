@@ -26,6 +26,7 @@ public class WeaponsManager : MonoBehaviour
         weapons[currentWeaponIndex].gameObject.SetActive(false);
         weapons[PlayerInput.weaponIndex].gameObject.SetActive(true);
         currentWeaponIndex = PlayerInput.weaponIndex;
+        GameUIController.Instance.UpdateWeaponLogo(currentWeaponIndex);
     }
 
     public Weapon GetActiveWeapon()

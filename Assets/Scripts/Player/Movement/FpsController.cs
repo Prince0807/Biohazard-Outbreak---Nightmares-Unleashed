@@ -1,4 +1,6 @@
-    using UnityEngine;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInput))]
@@ -62,6 +64,8 @@ public class FpsController : MonoBehaviour, IDamageable
 
         PlayerInput.crouchInput += HandleCrouching;
         PlayerInput.jumpInput += HandleJumping;
+
+        StartCoroutine(RegenrateHealth());
     }
 
     void Update()
@@ -151,5 +155,21 @@ public class FpsController : MonoBehaviour, IDamageable
     public void Damage(int damage)
     {
         health -= damage;
+        GameUIController.Instance.SetBloodImageAlpha(health);
+
+        if (health <= 0)
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    IEnumerator RegenrateHealth()
+    {
+        if(health < 100)
+        {
+            health++;
+            GameUIController.Instance.SetBloodImageAlpha(health);
+        }        
+        yield return new WaitForSeconds(1);
+        
+        StartCoroutine(RegenrateHealth());
     }
 }
