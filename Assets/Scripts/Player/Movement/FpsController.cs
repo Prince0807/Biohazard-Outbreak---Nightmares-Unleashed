@@ -58,6 +58,7 @@ public class FpsController : MonoBehaviour, IDamageable
         originalHeight = characterController.height;
         cameraStandPosition = playerCamera.transform.localPosition;
         cameraCrouchPosition = cameraStandPosition + new Vector3(0, crouchCameraOffset, 0);
+        health = 100;
 
         PlayerInput.crouchInput += HandleCrouching;
         PlayerInput.jumpInput += HandleJumping;

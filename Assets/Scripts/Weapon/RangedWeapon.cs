@@ -1,3 +1,4 @@
+using Obscure.SDC;
 using System;
 using UnityEngine;
 
@@ -6,6 +7,10 @@ public class RangedWeapon : Weapon
 {
     [SerializeField] Transform muzzle;
     [SerializeField] ParticleSystem muzzleFlash;
+
+    private Crosshair crosshair;
+    private Vector2 crosshairDefaultSize = new Vector2(40f, 40f);
+
     private bool reloading;
 
     private void OnEnable()
@@ -29,6 +34,25 @@ public class RangedWeapon : Weapon
             PlayerInput.shootInput -= Shoot;
 
         PlayerInput.reloadInput -= StartReload;
+        crosshair.SetSize(crosshairDefaultSize);
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
+        crosshair = GameUIController.Instance.crosshair;
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        crosshair.SetSize(crosshairDefaultSize);
+        if (crosshair.GetTarget() == null)
+            crosshair.SetColor(Color.gray, 0.5f, 1f);
+        else if (crosshair.GetTarget().GetComponent<IDamageable>() != null)
+            crosshair.SetColor(Color.red, 1f, 0.5f);
+        else
+            crosshair.SetColor(Color.white, 1f, 1f);
     }
 
     private void StartReload()
@@ -59,22 +83,18 @@ public class RangedWeapon : Weapon
         {
             if (weaponData.magAmmo > 0)
             {
-                if (Physics.Raycast(Camera.main.transform.position, transform.forward, out RaycastHit hitInfo, weaponData.maxDistance))
-                {
-                    Debug.Log(hitInfo.collider.gameObject.name);
-                    if(hitInfo.collider.TryGetComponent(out IDamageable hit))
-                    {
-                        Debug.Log("Hit");
-                        hit.Damage(weaponData.damage);
-                    }
-                    animator.SetTrigger("Fire");
-                    audioSource.clip = weaponData.fire_Audio;
-                    audioSource.Play();
-                    muzzleFlash.Play();
-                }
+                animator.Play("Fire", 0, 0);
+                audioSource.clip = weaponData.fire_Audio;
+                audioSource.Play();
+                muzzleFlash.Play();
+                crosshair.MultiplySize(1.5f, 0.5f);
 
                 weaponData.magAmmo--;
                 timeSinceLastShot = 0;
+
+                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hitInfo, weaponData.maxDistance))
+                    if (hitInfo.collider.TryGetComponent(out IDamageable hit))
+                        hit.Damage(weaponData.damage);
             }
             else
             {

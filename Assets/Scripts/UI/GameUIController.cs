@@ -1,3 +1,4 @@
+using Obscure.SDC;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -8,10 +9,14 @@ public class GameUIController : MonoBehaviour
     public static GameUIController Instance;
 
     private WeaponsManager weaponsManager;
+    private FpsController fpsController;
 
+    [Header("Weapon UI")]
+    public Crosshair crosshair;
     [SerializeField] private TMP_Text magazineAmmo;
     [SerializeField] private TMP_Text carryingAmmo;
 
+    [Header("Health UI")]
     [SerializeField] private TMP_Text health;
 
     private void Awake()
@@ -22,6 +27,14 @@ public class GameUIController : MonoBehaviour
 
         if(weaponsManager == null)
             weaponsManager = FindObjectOfType<WeaponsManager>();
+        if(fpsController == null)
+            fpsController = FindObjectOfType<FpsController>();
+    }
+
+    private void Update()
+    {
+        UpdateAmmoUI();
+        UpdateHealthUI();
     }
 
     public void UpdateAmmoUI()
@@ -32,6 +45,6 @@ public class GameUIController : MonoBehaviour
 
     public void UpdateHealthUI()
     {
-
+        health.text = fpsController.health.ToString();
     }
 }

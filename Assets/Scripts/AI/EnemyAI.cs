@@ -9,7 +9,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
 {
     [SerializeField] Transform target;
     NavMeshAgent navMeshAgent;
-    [SerializeField] float chaseRange = 5f;
+    [SerializeField] float chaseRange = 20f;
     private Animator animator;
     
     float distanceToTarget = Mathf.Infinity;

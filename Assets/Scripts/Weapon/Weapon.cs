@@ -1,3 +1,4 @@
+using Obscure.SDC;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
